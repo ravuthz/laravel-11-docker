@@ -1,0 +1,52 @@
+services:
+  api1:
+    image: ravuthz/laravel-php:8.3-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8001:9000"
+  api2:
+    build:
+      args:
+        - PHP_VERSION=8.3
+        - NODE_VERSION=20
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8002:9000"
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        "php artisan migrate:fresh --seed && php artisan serve --host=0.0.0.0 --port=9000",
+      ]
+  api3:
+    build:
+      args:
+        - PHP_VERSION=8.3
+        - NODE_VERSION=20
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8003:9000"
+    command:
+      [
+        "/bin/sh -c",
+        "php artisan migrate:fresh --seed && frankenphp php-server --listen :9000 --root /var/www/html/public/",
+      ]
